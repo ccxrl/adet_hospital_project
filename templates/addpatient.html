@@ -1,0 +1,68 @@
+{% include "header.html" %}
+
+
+{% block body %}
+
+
+<div class="panel=heading">
+
+<h2>Add Patient <a class="pull-right btn btn-success" href="/">Back</a> </h2>
+
+</div>
+
+
+
+<div class="panel-body">
+
+<form action="{{ url_for('procespatient') }}" method="post">
+<div class="form-group">
+
+    <label for="name">Patient Name</label>
+    <input type="text" class="form-control" name="name" id="name" required = "1"  >
+
+</div>
+
+
+
+    <div class="form-group">
+
+    <label for="name">Patient Email</label>
+    <input type="text" class="form-control" name="email" id="email" >
+
+</div>
+
+
+
+
+        <div class="form-group">
+
+    <label for="name">Patient Phone</label>
+    <input type="text" class="form-control" name="phone" id="phone" required = "1"  >
+
+</div>
+
+
+    <div class="form-group">
+        <input type="hidden" name="id" value="1">
+
+     <input type="hidden" name="action" value="edit">
+     <input type="submit" class="btn btn-success" name="submit" value="Add Patient">
+
+</div>
+
+
+</form>
+
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+
+
+
+{% include "footer.html" %}
