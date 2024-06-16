@@ -1,286 +1,112 @@
-{% include "header.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-<link href="{{url_for('static', filename = 'css/bootstrap.min.css')}}" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Patients</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Include any additional stylesheets or scripts here -->
+</head>
 
 {% block body %}
-
-
-
-    <div class="row">
-
-        <div class="col md-12">
-
-
-
-            <h2>Patient List <button type="button" class="btn btn-success  pull-right" data-toggle="modal" data-target="#myModal">Add Patient Data</button></h2>
-
-
-    {%with messages = get_flashed_messages()%}
-
-    {%if messages%}
-
-    {% for message in messages %}
-
-    <div class="alert alert-success alert-dismissable" role="alert">
-
-     <button type="button" class="close" data-dismiss="alert" aria-label ="close">
-
-         <span aria-hidden="true">&times;</span>
-
-     </button>
-        {{message}}
-
-
-    </div>
-
-
-    {%endfor%}
-    {%endif%}
-    {%endwith%}
-
-
-
-
-            <table class="table table-striped">
-
-
-                <tr>
-              <th>Serial</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Action</th>
-
-
-          </tr>
-                {% for row in patients %}
-                <tr>
-                    <td>{{row.0}}</td>
-                    <td>{{row.1}}</td>
-                    <td>{{row.2}}</td>
-                    <td>{{row.3}}</td>
-                    <td>
-                        <a href="/update/{{row.0}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.0}}">Edit</a>
-                        <a href="/delete/{{ row.0 }}" class="btn btn-danger btn-xs" onclick="return confirm('Are You Sure For Delete?')">Delete</a>
-                        <a href="{{ url_for('view_patient', patient_id=row.0) }}" class="btn btn-info btn-xs">View</a>
-
-                    </td>
-
-                </tr>
-
-                <div id="modaledit{{row.0}}" class="modal fade" role="dialog">
-
-
-   <div class="modal-dialog">
-
-
-      <div class="modal-content">
-
-
-         <div class="modal-header">
-
-
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-
-
-            <h4 class="modal-title">Update Information</h4>
-
-
-         </div>
-
-
-         <div class="modal-body">
-
-
-            <form action="{{ url_for('update') }}" method="POST">
-
-
-               <div class="form-group">
-
-
-                  <label>Name:</label>
-                   <input type="hidden"  name="id" value="{{row.0}}">
-
-                  <input type="text" class="form-control" name="name" value="{{row.1}}">
-
-
-               </div>
-
-
-
-               <div class="form-group">
-
-
-                  <label>Email:</label>
-
-                  <input type="text" class="form-control" name="email" value="{{row.2}}">
-
-
-               </div>
-
-
-               <div class="form-group">
-
-
-                  <label>Phone:</label>
-
-                  <input type="text" class="form-control" name="phone" value="{{row.3}}">
-
-
-               </div>
-
-
-               <div class="form-group">
-
-
-                  <button class="btn btn-primary" type="sbumit">Update</button>
-
-
-               </div>
-
-
-            </form>
-
-
-         </div>
-
-
-         <div class="modal-footer">
-
-
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
-
-         </div>
-
-
-      </div>
-
-
-   </div>
-
-
-</div>
-
-
-                {% endfor  %}
-
-
-                </tbody>
-
-
-            </table>
-
-
+<div class="min-h-screen bg-zinc-100 dark:bg-zinc-900 flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white dark:bg-zinc-800 p-4">
+        <div class="text-red-500 text-2xl font-bold mb-8">Patient List</div>
+        <nav>
+            <ul>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-zinc-700 dark:text-zinc-300">
+                        <span class="material-icons mr-2">dashboard</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-zinc-700 dark:text-zinc-300">
+                        <span class="material-icons mr-2">event</span>
+                        Appointments
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-zinc-700 dark:text-zinc-300">
+                        <span class="material-icons mr-2">local_hospital</span>
+                        Doctor
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <ahref="#" class="flex items-center text-blue-500">
+                        <span class="material-icons mr-2">people</span>
+                        Patients
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" class="flex items-center text-zinc-700 dark:text-zinc-300">
+                        <span class="material-icons mr-2">message</span>
+                        Messages
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center text-zinc-700 dark:text-zinc-300">
+                        <span class="material-icons mr-2">settings</span>
+                        Setting
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <!-- Flash Messages -->
+        {% for message in get_flashed_messages() %}
+        <div class="bg-green-500 text-white p-3 rounded">
+        {{ message }}
+        </div>
+        {% endfor %}
+        
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-200">List of Patients</h1>
+            <a href="{{ url_for('add_patient') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg">+ Add Patient Data</a>
         </div>
 
+        <!-- Patient List Table -->
+        <div class="bg-white dark:bg-zinc-800 shadow rounded-lg overflow-hidden">
+            <table class="min-w-full bg-white dark:bg-zinc-800">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-700 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Serial</th>
+                        <th class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-700 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-700 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-700 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Phone</th>
+                        <th class="px-6 py-3 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-700 text-left text-xs font-medium text-zinc-500 dark:text-zinc-300 uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                    {% for row in patients %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">{{ row.0 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">{{ row.1 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">{{ row.2 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">{{ row.3 }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">
+                            <a href="{{ url_for('edit_patient', patient_id=row.0) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded">Edit</a>                           
+                            <a href="/delete/{{ row.0 }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded" onclick="return confirm('Are You Sure For Delete?')">Delete</a>
+                            <a href="{{ url_for('view_patient', patient_id=row.0) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        
 
-<!-- Modal -->
-
-
-<div id="myModal" class="modal fade" role="dialog">
-
-
-   <div class="modal-dialog">
-
-
-      <div class="modal-content">
-
-
-         <div class="modal-header">
-
-
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-
-
-            <h4 class="modal-title">Please Insert Data</h4>
-
-
-         </div>
-
-
-         <div class="modal-body">
-
-
-            <form action="{{ url_for('insert') }}" method="POST">
-
-
-               <div class="form-group">
-
-
-                  <label>Name:</label>
-                  <input type="text" class="form-control" name="name" required="1">
-
-
-               </div>
-
-
-                <div class="form-group">
-
-
-                  <label>Email:</label>
-                  <input type="text" class="form-control" name="email">
-
-
-               </div>
-
-
-                <div class="form-group">
-
-
-                  <label>Phone:</label>
-                  <input type="text" class="form-control" name="phone" required="1">
-
-
-               </div>
-
-
-
-               <div class="form-group">
-
-
-                  <button class="btn btn-primary" type="submit">Insert Data</button>
-
-
-               </div>
-
-
-            </form>
-
-
-         </div>
-
-
-         <div class="modal-footer">
-
-
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
-
-         </div>
-
-
-      </div>
-
-
-   </div>
-
-
-</div>
-
-
-
-
-  {% include "footer.html" %}
     </div>
 
-
 </div>
 
-
+{% include "footer.html" %}
 {% endblock %}
-
-
-<script type="text/javascript" src="{{url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
-
-<script type="text/javascript" src="{{url_for('static', filename = 'js/bootstrap.min.js')}}"></script>

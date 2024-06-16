@@ -24,7 +24,12 @@
             </div>
 
             <div class="w-4/5 p-4">
-                
+                <!-- Flash Messages -->
+                {% for message in get_flashed_messages() %}
+                <div class="bg-green-500 text-white p-3 rounded">
+                {{ message }}
+                </div>
+                {% endfor %}
 
                 <!-- Patient Information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -43,12 +48,9 @@
 
                     <div class="bg-white dark:bg-zinc-800 p-4 rounded shadow">
                         <h2 class="text-xl font-bold mb-4">Information</h2>
+                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Name:</strong> {{ patient.name }}</p>
                         <p class="text-zinc-600 dark:text-zinc-400"><strong>Email:</strong> {{ patient.email }}</p>
                         <p class="text-zinc-600 dark:text-zinc-400"><strong>Phone:</strong> {{ patient.phone }}</p>
-                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Height:</strong> 6ft</p>
-                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Weight:</strong> 80kg</p>
-                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Blood Group:</strong> O+</p>
-                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Admit Date:</strong> 20th December 2020</p>
                     </div>
                 </div>
 

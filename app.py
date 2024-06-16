@@ -22,18 +22,23 @@ def Index():
     return render_template('index2.html', patients=data)
 
 
+@app.route('/add_patient')
+def add_patient():
+    return render_template('add_patient.html')
+
 # add patient
 @app.route('/insert', methods=['POST'])
 def insert():
     if request.method == "POST":
-        flash("Data Inserted Successfully")
         name = request.form['name']
         email = request.form['email']
         phone = request.form['phone']
         cur = mysql.connection.cursor()
         cur.execute("INSERT INTO patients (name, email, phone) VALUES (%s, %s, %s)", (name, email, phone))
         mysql.connection.commit()
+        flash("Data Inserted Successfully")
         return redirect(url_for('Index'))
+
 
 
 # delete patient
@@ -69,9 +74,9 @@ def delete(id_data):
 
 
 
-# edit patient
-@app.route('/update', methods=['POST', 'GET'])
-def update():
+# update button patient
+@app.route('/update_patient', methods=['POST'])
+def update_patient():
     if request.method == 'POST':
         id_data = request.form['id']
         name = request.form['name']
@@ -79,13 +84,41 @@ def update():
         phone = request.form['phone']
         cur = mysql.connection.cursor()
         cur.execute("""
-               UPDATE patients
-               SET name=%s, email=%s, phone=%s
-               WHERE id=%s
-            """, (name, email, phone, id_data))
-        flash("Data Updated Successfully")
+            UPDATE patients
+            SET name=%s, email=%s, phone=%s
+            WHERE id=%s
+        """, (name, email, phone, id_data))
         mysql.connection.commit()
+        flash("Data Updated Successfully")
         return redirect(url_for('Index'))
+
+# edit patient
+@app.route('/edit_patient/<int:patient_id>', methods=['GET', 'POST'])
+def edit_patient(patient_id):
+    cur = mysql.connection.cursor()
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM patients WHERE id=%s", (patient_id,))
+        patient = cur.fetchone()
+        cur.close()
+        if patient:
+            return render_template('edit_patient.html', patient=patient)
+        else:
+            flash("Patient not found")
+            return redirect(url_for('Index'))
+    elif request.method == 'POST':
+        id_data = request.form['id']
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        cur.execute("""
+            UPDATE patients
+            SET name=%s, email=%s, phone=%s
+            WHERE id=%s
+        """, (name, email, phone, id_data))
+        mysql.connection.commit()
+        flash("Data Updated Successfully")
+        return redirect(url_for('Index'))
+
 
 
 # view patient
