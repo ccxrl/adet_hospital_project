@@ -1,3 +1,23 @@
+# add:
+# address column
+# upload picture
+# doctor table
+# 	- pk doctor id
+# 	- fk patient id
+
+# patient table
+# 	- fk doctor id
+
+# add_patient.html
+# 	- doctor field
+
+# view_patient
+# 	- information
+# 		- doctor name 
+
+
+
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -19,7 +39,7 @@ def Index():
     cur.execute("SELECT * FROM patients")
     data = cur.fetchall()
     cur.close()
-    return render_template('index2.html', patients=data)
+    return render_template('Index.html', patients=data)
 
 
 @app.route('/add_patient')
@@ -33,8 +53,15 @@ def insert():
         name = request.form['name']
         email = request.form['email']
         phone = request.form['phone']
+        address = request.form['address']
+        weight = request.form['weight']
+        height = request.form['height']
+        blood_type = request.form['blood_type']
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO patients (name, email, phone) VALUES (%s, %s, %s)", (name, email, phone))
+        cur.execute("""
+            INSERT INTO patients (name, email, phone, address, weight, height, blood_type) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (name, email, phone, address, weight, height, blood_type))
         mysql.connection.commit()
         flash("Data Inserted Successfully")
         return redirect(url_for('Index'))
@@ -82,15 +109,20 @@ def update_patient():
         name = request.form['name']
         email = request.form['email']
         phone = request.form['phone']
+        address = request.form['address']
+        weight = request.form['weight']
+        height = request.form['height']
+        blood_type = request.form['blood_type']
         cur = mysql.connection.cursor()
         cur.execute("""
             UPDATE patients
-            SET name=%s, email=%s, phone=%s
+            SET name=%s, email=%s, phone=%s, address=%s, weight=%s, height=%s, blood_type=%s
             WHERE id=%s
-        """, (name, email, phone, id_data))
+        """, (name, email, phone, address, weight, height, blood_type, id_data))
         mysql.connection.commit()
         flash("Data Updated Successfully")
         return redirect(url_for('Index'))
+
 
 # edit patient
 @app.route('/edit_patient/<int:patient_id>', methods=['GET', 'POST'])
@@ -110,14 +142,19 @@ def edit_patient(patient_id):
         name = request.form['name']
         email = request.form['email']
         phone = request.form['phone']
+        address = request.form['address']
+        weight = request.form['weight']
+        height = request.form['height']
+        blood_type = request.form['blood_type']
         cur.execute("""
             UPDATE patients
-            SET name=%s, email=%s, phone=%s
+            SET name=%s, email=%s, phone=%s, address=%s, weight=%s, height=%s, blood_type=%s
             WHERE id=%s
-        """, (name, email, phone, id_data))
+        """, (name, email, phone, address, weight, height, blood_type, id_data))
         mysql.connection.commit()
         flash("Data Updated Successfully")
         return redirect(url_for('Index'))
+
 
 
 
@@ -125,27 +162,23 @@ def edit_patient(patient_id):
 @app.route('/view_patient/<int:patient_id>')
 def view_patient(patient_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-    # Fetch patient details
     cur.execute("SELECT * FROM patients WHERE id = %s", (patient_id,))
-    patient = cur.fetchone()  # Fetch the single patient row as a dictionary
+    patient = cur.fetchone()
 
     if not patient:
         flash("Patient not found")
         return redirect(url_for('Index'))
 
-    # Fetch records associated with the patient
     cur.execute("SELECT * FROM records WHERE patient_id = %s", (patient_id,))
     records = cur.fetchall()
 
-    # Fetch admission details associated with the patient
     cur.execute("SELECT * FROM admission_details WHERE patient_id = %s", (patient_id,))
     admissions = cur.fetchall()
 
     cur.close()
 
-    # Render the view_patient.html template with patient, records, and admissions data
     return render_template('view_patient.html', patient=patient, records=records, admissions=admissions)
+
 
 
 
@@ -307,6 +340,128 @@ def delete_admission(admission_id, patient_id):
     cur.close()
 
     return redirect(url_for('view_patient', patient_id=patient_id))
+
+
+
+
+
+
+# DOCTORS
+
+# view doctors
+@app.route('/view_doctors')
+def view_doctors():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM doctors")
+    doctors = cur.fetchall()
+    cur.close()
+    
+    return render_template('doctors.html', doctors=doctors)
+
+
+
+# add doctor
+@app.route('/add_doctor', methods=['GET', 'POST'])
+def insert_doctor():
+    if request.method == "POST":
+        name = request.form['name']
+        specialization = request.form['specialization']
+        
+        # Insert data into the database
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO doctors (name, specialization)
+            VALUES (%s, %s)
+        """, (name, specialization))
+        mysql.connection.commit()
+        flash("Doctor Inserted Successfully")
+        
+        # Redirect to view_doctors instead of Index
+        return redirect(url_for('view_doctors'))
+
+    return render_template('add_doctor.html')
+
+
+
+# delete doctor
+@app.route('/delete_doctor/<int:doctor_id>', methods=['GET'])
+def delete_doctor(doctor_id):
+    cur = mysql.connection.cursor()
+
+    # Check if the doctor is assigned to any records
+    cur.execute("SELECT * FROM records WHERE doctor_assigned=%s", (doctor_id,))
+    records = cur.fetchall()
+
+    if records:
+        flash("Cannot delete doctor because records are assigned.")
+        return redirect(url_for('index'))
+
+    # Proceed with deleting the doctor if no records are assigned
+    cur.execute("DELETE FROM doctors WHERE doctor_id=%s", (doctor_id,))
+    mysql.connection.commit()
+    flash("Doctor Deleted Successfully")
+
+    cur.close()
+
+    return redirect(url_for('index'))
+
+
+
+
+# update doctor info
+@app.route('/update_doctor', methods=['POST'])
+def update_doctor():
+    if request.method == 'POST':
+        doctor_id = request.form['doctor_id']
+        name = request.form['name']
+        specialization = request.form['specialization']
+
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE doctors
+            SET name=%s, specialization=%s
+            WHERE doctor_id=%s
+        """, (name, specialization, doctor_id))
+        mysql.connection.commit()
+        flash("Doctor Updated Successfully")
+        return redirect(url_for('index'))
+
+
+
+# edit doctor
+@app.route('/edit_doctor/<int:doctor_id>', methods=['GET', 'POST'])
+def edit_doctor(doctor_id):
+    cur = mysql.connection.cursor()
+
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM doctors WHERE doctor_id=%s", (doctor_id,))
+        doctor = cur.fetchone()
+        cur.close()
+        
+        if doctor:
+            return render_template('edit_doctor.html', doctor=doctor)
+        else:
+            flash("Doctor not found")
+            return redirect(url_for('index'))
+
+    elif request.method == 'POST':
+        doctor_id = request.form['doctor_id']
+        name = request.form['name']
+        specialization = request.form['specialization']
+
+        cur.execute("""
+            UPDATE doctors
+            SET name=%s, specialization=%s
+            WHERE doctor_id=%s
+        """, (name, specialization, doctor_id))
+        mysql.connection.commit()
+        flash("Doctor Updated Successfully")
+        return redirect(url_for('index'))
+
+
+
+
+
 
 
 

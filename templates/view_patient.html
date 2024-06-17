@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADET Final Project</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body>
     <div class="min-h-screen bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 p-4">
         <div class="flex">
             <div class="w-1/5 bg-teal-700 text-white p-4">
                 <div class="mb-6">
-                    <button class="text-white text-2xl">+</button>
+                    <a href="/" class="bg-teal-500 text-white w-full py-2 mt-4 rounded text-center inline-block">Back to Patient List</a>
                 </div>
                 <ul>
-                    <li class="mb-4"><a href="#" class="text-white">Dashboard</a></li>
-                    <li class="mb-4"><a href="#" class="text-white">Reports</a></li>
-                    <li class="mb-4"><a href="#" class="text-white">Settings</a></li>
+                    <a href="{{ url_for('view_doctors') }}" class="flex items-center text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg">
+                        <span class="material-icons mr-2">local_hospital</span>
+                        Doctors
+                    </a>
                 </ul>
             </div>
 
@@ -27,7 +25,7 @@
                 <!-- Flash Messages -->
                 {% for message in get_flashed_messages() %}
                 <div class="bg-green-500 text-white p-3 rounded">
-                {{ message }}
+                    {{ message }}
                 </div>
                 {% endfor %}
 
@@ -38,7 +36,6 @@
                             <img src="https://scontent.fcgm1-1.fna.fbcdn.net/v/t39.30808-6/371069984_1221057542628026_4915474357209123287_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeFfm5fPclEzQBW1JRmvxNjz-RA70q1sV6n5EDvSrWxXqc8qUe_D5-9-ZD996y5NMeFQyU7Y6jXP8Fb8J3eSUloe&_nc_ohc=o3zydUBtEbcQ7kNvgGfskS5&_nc_ht=scontent.fcgm1-1.fna&oh=00_AYCxv1HuZgG9Hq-alx3GaDAJqflLP6s7X0mUTzsj6xC5bQ&oe=6671B527" alt="Profile Picture" class="rounded-full mx-auto mb-4 w-24 h-24 object-cover border border-white">
                             <h2 class="text-center text-xl font-bold">{{ patient.name }}</h2>
                             <p class="text-center text-zinc-600 dark:text-zinc-400">Patient ID: {{ patient.id }}</p>
-                            <a href="/" class="bg-teal-500 text-white w-full py-2 mt-4 rounded text-center inline-block">Back to Patient List</a>
                             <div class="mt-4">
                                 <label for="patient-picture" class="block text-sm font-medium text-zinc-600 dark:text-zinc-400">Upload Picture</label>
                                 <input type="file" id="patient-picture" name="patient-picture" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -51,6 +48,10 @@
                         <p class="text-zinc-600 dark:text-zinc-400"><strong>Name:</strong> {{ patient.name }}</p>
                         <p class="text-zinc-600 dark:text-zinc-400"><strong>Email:</strong> {{ patient.email }}</p>
                         <p class="text-zinc-600 dark:text-zinc-400"><strong>Phone:</strong> {{ patient.phone }}</p>
+                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Address:</strong> {{ patient.address }}</p>
+                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Weight:</strong> {{ patient.weight }}</p>
+                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Height:</strong> {{ patient.height }}</p>
+                        <p class="text-zinc-600 dark:text-zinc-400"><strong>Blood Type:</strong> {{ patient.blood_type }}</p>
                     </div>
                 </div>
 
@@ -95,10 +96,14 @@
 
                 <!-- Admission Details Section -->
                 <div class="bg-white dark:bg-zinc-800 p-4 rounded shadow mb-4">
-                    <h2 class="text-xl font-bold mb-4">Admission Details</h2>
-                    <a href="{{ url_for('add_admission', patient_id=patient.id) }}" class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded pull-right">
-                        Add Admission Details
-                    </a>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold mb-4">Admission Details</h2>
+                        <a href="{{ url_for('add_admission', patient_id=patient.id) }}" class="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded pull-right">
+                            Add Admission Details
+                        </a>
+                    </div>
+
                     <table class="w-full mt-4 table-auto">
                         <thead>
                             <tr>
